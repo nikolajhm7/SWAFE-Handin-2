@@ -1,5 +1,5 @@
-import CreateUserScreen from "../components/screens/manager/CreateUserScreen";
-import { useAuth } from "../providers/AuthProvider"; // this is client hook, but page is server by default
+import CreateUserScreen from "../../components/screens/manager/CreateUserScreen";
+import { useAuth } from "../../providers/AuthProvider"; // this is client hook, but page is server by default
 
 export default function Page() {
   // route files can be server components. To perform a client-side auth redirect, create a client wrapper,
