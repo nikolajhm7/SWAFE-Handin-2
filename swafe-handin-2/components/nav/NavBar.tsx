@@ -39,11 +39,11 @@ export default function NavBar() {
 
     return [{ href: "/", label: "Home" }];
   };
-
+  
   const navigationLinks = roleLinks();
 
   return (
-    <nav className="w-full border-b px-6 py-3">
+    <nav className="w-full px-6 py-3">
       <div className="mx-auto flex max-w-6xl items-center justify-between">
         {/* Left side: brand + role-specific links */}
         <div className="flex items-center gap-4">
@@ -55,7 +55,7 @@ export default function NavBar() {
             <Link
               key={link.href}
               href={link.href}
-              className="text-sm text-zinc-600 hover:text-zinc-900"
+              className="text-sm hover:text-zinc-400"
             >
               {link.label}
             </Link>
@@ -66,7 +66,7 @@ export default function NavBar() {
         <div className="flex items-center gap-3">
           {isAuthenticated ? (
             <div className="flex items-center gap-3">
-              <div className="text-sm text-zinc-700">
+              <div className="text-sm">
                 Welcome, {displayName}!
                 {role !== "guest" && (
                   <span className="ml-2 rounded bg-zinc-100 px-2 py-0.5 text-xs uppercase tracking-wide text-zinc-500">
