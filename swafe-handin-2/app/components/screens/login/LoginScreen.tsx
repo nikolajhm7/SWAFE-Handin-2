@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "../../../providers/AuthProvider";
+import { useRouter } from "next/navigation";
 
 export default function LoginScreen() {
   const { role, login, isAuthenticated, logout } = useAuth();
@@ -22,6 +23,17 @@ export default function LoginScreen() {
       setLoading(false);
     }
   }
+
+  // Redirect after successful login based on role
+  const router = useRouter();
+  useEffect(() => {
+    if (isAuthenticated) {
+      if (role === "manager") router.push("/manager");
+      else if (role === "trainer") router.push("/trainer");
+      else if (role === "client") router.push("/client");
+      else router.push("/");
+    }
+  }, [isAuthenticated, role, router]);
 
   return (
     <div className="p-8 max-w-xl">
