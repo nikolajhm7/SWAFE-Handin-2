@@ -3,8 +3,9 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { login as apiLogin } from "../services/auth";
 import apiFetch from "../services/apiClient";
+import { DecodedToken, parseJwt } from "@/utils/jwt";
 
-type Role = "guest" | "manager" | "trainer" | "client";
+export type Role = "guest" | "manager" | "trainer" | "client";
 
 interface AuthContextValue {
 	role: Role;
@@ -12,67 +13,139 @@ interface AuthContextValue {
 	token: string | null;
 	user: any | null;
 	isAuthenticated: boolean;
+	isReady: boolean;
 	login: (email: string, password: string) => Promise<void>;
 	logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
+function normalizeRoleFromToken(token: DecodedToken | null): Role {
+	console.log("Normalizing role from token:", token);
+	if (!token) return "guest";
+
+	const raw =
+	token.Role ||
+	token.role ||
+	token["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+
+	if (!raw || typeof raw !== "string") return "client";
+
+	const lower = raw.toLowerCase();
+	if (lower.includes("manager")) return "manager";
+	if (lower.includes("personaltrainer")) return "trainer";
+	if (lower.includes("client")) return "client";
+
+	return "client";
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
 	const [role, setRole] = useState<Role>("guest");
 	const [user, setUser] = useState<any | null>(null);
-	const [token, setToken] = useState<string | null>(() =>
-		typeof window !== "undefined" ? localStorage.getItem("auth_token") : null
-	);
+	const [token, setToken] = useState<string | null>(null);
+	const [userId, setUserId] = useState<string | null>(null);
+	const [isReady, setIsReady] = useState<boolean>(false);
 
+	// 1) On mount: hydrate token from localStorage
 	useEffect(() => {
-		if (token) localStorage.setItem("auth_token", token);
-		else localStorage.removeItem("auth_token");
+		console.log("[Auth] Initializing from localStorage");
+		if (typeof window === "undefined") return;
+
+		const stored = localStorage.getItem("auth_token");
+		if (!stored) {
+			setRole("guest");
+			setUser(null);
+			setUserId(null);
+			setIsReady(true);
+			return;
+		}
+
+		console.log("[Auth] Found stored token:", stored);
+		setToken(stored);
+		setIsReady(true);
+	}, []);
+
+	// 2) Whenever token changes: persist + decode + set role/user/userId
+	useEffect(() => {
+		if (typeof window === "undefined") return;
+
+		if (!token) {
+			// logged out
+			setRole("guest");
+			setUser(null);
+			setUserId(null);
+			return;
+		}
+
+		localStorage.setItem("auth_token", token);
+
+		const decoded = parseJwt(token);
+		const normalizedRole = normalizeRoleFromToken(decoded);
+		setRole(normalizedRole);
+
+		const id = (decoded as any)?.UserId || (decoded as any)?.userId || null;
+		setUserId(id ?? null);
+
+		setUser({
+			name: (decoded as any)?.Name,
+			tokenRole: (decoded as any)?.Role,
+			userId: id,
+			groupId: (decoded as any)?.GroupId,
+		});
 	}, [token]);
+
+	// 3) Fetch full profile when token + userId are ready
+	useEffect(() => {
+		if (!token || !userId) return;
+
+		let cancelled = false;
+
+		async function loadUser() {
+			try {
+				const profile = await apiFetch(`/api/Users/${userId}`);
+				if (cancelled) return;
+				setUser((prev: any) => ({
+					...(prev || {}),
+					...profile,
+				}));
+				} catch (err) {
+				console.warn("[Auth] Failed fetching /api/Users/{id}:", err);
+			}
+		}
+
+		loadUser();
+		return () => {
+			cancelled = true;
+		};
+	}, [token, userId]);
 
 	async function login(email: string, password: string) {
 		const t = await apiLogin(email, password);
-		// persist immediately so apiFetch can read it
-		if (typeof window !== "undefined") localStorage.setItem("auth_token", t);
 		setToken(t);
-
-		// try to fetch profile /me to get role/user info
-		try {
-			const profile = await apiFetch("/api/Users/me");
-			setUser(profile);
-			// determine role from returned profile (adjust field name if different)
-			const serverRole = (profile && (profile.accountType || profile.role || profile.accountTypeName)) || null;
-			if (serverRole) {
-				// normalize common names
-				if (serverRole.toLowerCase().includes("manager")) setRole("manager");
-				else if (serverRole.toLowerCase().includes("trainer")) setRole("trainer");
-				else setRole("client");
-			}
-		} catch (err) {
-			// ignore profile fetch errors — we'll keep token but role stays guest until set manually
-			console.warn("Failed fetching profile after login:", err);
-		}
 	}
 
 	function logout() {
 		setToken(null);
 		setUser(null);
 		setRole("guest");
-		if (typeof window !== "undefined") localStorage.removeItem("auth_token");
+		setUserId(null);
+
+    	if (typeof window !== "undefined") localStorage.removeItem("auth_token");
+		
+		
 	}
 
 	return (
-		<AuthContext.Provider
-			value={{ role, setRole, token, user, isAuthenticated: !!token, login, logout }}
-		>
-			{children}
-		</AuthContext.Provider>
+	<AuthContext.Provider
+		value={{ role, setRole, token, user, isAuthenticated: !!token, isReady, login, logout }}
+	>
+		{children}
+	</AuthContext.Provider>
 	);
 }
 
 export function useAuth() {
-	const ctx = useContext(AuthContext);
-	if (!ctx) throw new Error("useAuth must be used within AuthProvider");
-	return ctx;
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error("useAuth must be used within AuthProvider");
+  return ctx;
 }
-
