@@ -18,7 +18,7 @@ export default function NavBar() {
     if (role === "manager") {
       return [
         { href: "/manager", label: "Dashboard" },
-        { href: "/manager/create-user", label: "Create trainer" },
+        { href: "/manager/create-trainer", label: "Create trainer" },
       ];
     }
 
