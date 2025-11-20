@@ -66,8 +66,6 @@ export default function LoginScreen() {
         </div>
         {error && <div className="text-sm text-red-600">{error}</div>}
       </form>
-
-      {/* Roles are determined by the authenticated user from the backend; manual switching removed. */}
     </div>
   );
 }
