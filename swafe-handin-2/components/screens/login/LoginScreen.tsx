@@ -38,7 +38,6 @@ export default function LoginScreen() {
   return (
     <div className="p-8 max-w-xl">
       <h1 className="text-2xl font-bold">Login</h1>
-      <p className="mt-2">Current role: <strong>{role}</strong></p>
 
       <form onSubmit={handleSubmit} className="mt-4 flex flex-col gap-2">
         <input
@@ -58,11 +57,6 @@ export default function LoginScreen() {
           <button disabled={loading} className="rounded bg-indigo-600 px-3 py-1 text-white" type="submit">
             {loading ? "Logging in..." : "Login"}
           </button>
-          {isAuthenticated && (
-            <button type="button" onClick={logout} className="rounded bg-gray-500 px-3 py-1 text-white">
-              Logout
-            </button>
-          )}
         </div>
         {error && <div className="text-sm text-red-600">{error}</div>}
       </form>

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../../../providers/AuthProvider";
-import { apiFetch } from "../../../../app/services/apiClient";
+import { apiFetch } from "../../../services/apiClient";
 
 export default function CreateUserScreen() {
     const { role, isAuthenticated } = useAuth();

@@ -14,7 +14,13 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
+    --background: #100927;
+    --background-secondary: #272244;
+    --item-background: #09042e;
+    --item-background-hover: #1a133e;
+    --text-primary: #e0e0e0;
+    --text-secondary: #bdbdbd;
+    --text-tertiary: #9e9e9e;
     --foreground: #ededed;
   }
 }
@@ -24,3 +30,363 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+nav {
+  background-color: var(--background-secondary);
+}
+
+/*#region Trainer Program Detail Styles */
+
+.program-page {
+  max-width: 768px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.program-back-button {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.program-back-button:hover {
+  color: var(--text-tertiary);
+}
+
+.program-status {
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+}
+
+.program-status--loading {
+  color: #6b7280;
+}
+
+.program-status--empty {
+  color: #6b7280;
+}
+
+.program-status--error {
+  color: #b91c1c;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+}
+
+.program-header {
+  margin-top: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.program-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.program-description {
+  font-size: 0.875rem;
+  color: var(--text-tertiary);
+  white-space: pre-line;
+  margin-top: 0.25rem;
+}
+
+.program-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-top: 0.5rem;
+}
+
+.program-exercises {
+  margin-top: 1.5rem;
+}
+
+.program-exercises-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.program-exercises-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.program-exercise-item {
+  border: 1px solid var(--text-primary);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  background-color: var(--item-background);
+}
+
+.program-exercise-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.program-exercise-name {
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.program-exercise-id {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.program-exercise-description {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-top: 0.25rem;
+}
+
+.program-exercise-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-top: 0.5rem;
+}
+
+/*#endregion Trainer Program Detail Styles */
+
+/*#region Trainer Program Styles */
+
+.program-list-page {
+  max-width: 768px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.program-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.program-list-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.program-list-subtitle {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-top: 0.25rem;
+}
+
+.program-list-new-button {
+  padding: 0.5rem 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid #e5e7eb;
+  background-color: var(--item-background);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.program-list-new-button:hover {
+  background-color: var(--item-background-hover);
+}
+
+.program-list-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.program-status {
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+}
+
+.program-status--loading {
+  color: #6b7280;
+}
+
+.program-status--empty {
+  color: #6b7280;
+}
+
+.program-status--error {
+  color: #b91c1c;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+}
+
+.program-list-item {
+  width: 100%;
+  text-align: left;
+  border-radius: 0.75rem;
+  border: 1px solid #e5e7eb;
+  padding: 0.75rem 1rem;
+  background-color: var(--item-background);
+  cursor: pointer;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.program-list-item:hover {
+  background-color: var(--item-background-hover);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+}
+
+.program-list-item-main {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.program-list-item-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.program-list-item-description {
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.program-list-item-meta {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-align: right;
+}
+
+/*#endregion Trainer Program Styles */
+
+/*#region Trainer Create Program Styles */
+
+.program-create-page {
+  max-width: 768px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.program-create-header {
+  margin-bottom: 1.5rem;
+}
+
+.program-create-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.program-create-subtitle {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-top: 0.25rem;
+}
+
+.program-create-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.program-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.program-form-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #111827;
+}
+
+.program-form-required {
+  color: #b91c1c;
+  margin-left: 0.15rem;
+}
+
+.program-form-input,
+.program-form-textarea {
+  border-radius: 0.5rem;
+  border: 1px solid #d1d5db;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  outline: none;
+}
+
+.program-form-input:focus,
+.program-form-textarea:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 1px #2563eb33;
+}
+
+.program-form-input:disabled,
+.program-form-textarea:disabled {
+  background-color: #f3f4f6;
+}
+
+.program-form-helper {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.program-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.program-button {
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 999px;
+  padding: 0.5rem 1.1rem;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+
+.program-button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.program-button--secondary {
+  background-color: #ffffff;
+  color: #374151;
+  border-color: #d1d5db;
+}
+
+.program-button--secondary:hover:not(:disabled) {
+  background-color: #f9fafb;
+}
+
+.program-button--primary {
+  background-color: #0e2a64;
+  color: #ffffff;
+}
+
+.program-button--primary:hover:not(:disabled) {
+  background-color: #091841;
+}
+
+/*#endregion Trainer Create Program Styles */
