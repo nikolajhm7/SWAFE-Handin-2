@@ -5,7 +5,13 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "../../../providers/AuthProvider";
 import { apiFetch } from "../../../services/apiClient";
 
-export default function CreateUserScreen() {
+type Props = {
+    defaultAccountType?: string;
+    className?: string;
+    onClose?: () => void;
+};
+
+export default function CreateUserScreen({ defaultAccountType, className, onClose }: Props) {
     const { role, isAuthenticated } = useAuth();
     const router = useRouter();
 
@@ -19,12 +25,12 @@ export default function CreateUserScreen() {
             router.push("/"); // or /client view
         }
     }, [role, isAuthenticated, router]);
-    
+
     const [email, setEmail] = useState("");
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     const [password, setPassword] = useState("");
-    const [accountType, setAccountType] = useState("Client"); // Manager/PersonalTrainer/Client
+    const [accountType, setAccountType] = useState(defaultAccountType || "Client"); // Manager/PersonalTrainer/Client
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState<string | null>(null);
 
@@ -35,7 +41,7 @@ export default function CreateUserScreen() {
         try {
             // Endpoint path in backend: /api/Users
             const payload = { email, firstName, lastName, password, accountType };
-            const res = await apiFetch("/api/Users", {
+            await apiFetch("/api/Users", {
                 method: "POST",
                 body: JSON.stringify(payload),
             });
@@ -45,7 +51,7 @@ export default function CreateUserScreen() {
             setFirstName("");
             setLastName("");
             setPassword("");
-            setAccountType("Client");
+            setAccountType(defaultAccountType || "Client");
         } catch (err: any) {
             setMessage("Error: " + (err?.message || String(err)));
         } finally {
@@ -54,8 +60,13 @@ export default function CreateUserScreen() {
     }
 
     return (
-        <div className="p-6 max-w-xl">
-            <h2 className="text-xl font-semibold">Create user</h2>
+        <div className={className ?? "p-6 max-w-xl"}>
+            <div className="flex items-start justify-between">
+                <h2 className="text-xl font-semibold">Create user</h2>
+                {onClose && (
+                    <button type="button" onClick={onClose} className="ml-3 rounded border px-2 py-1 text-sm">Close</button>
+                )}
+            </div>
             <form onSubmit={handleSubmit} className="mt-4 flex flex-col gap-2">
                 <input placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} className="rounded border px-2 py-1" />
                 <input placeholder="First name" value={firstName} onChange={(e) => setFirstName(e.target.value)} className="rounded border px-2 py-1" />
