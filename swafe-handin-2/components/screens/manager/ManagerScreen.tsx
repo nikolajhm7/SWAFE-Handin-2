@@ -27,20 +27,14 @@ export default function ManagerScreen() {
             return Number.isFinite(n) ? n : null;
           };
 
-          // filter out those with numeric id less than 277
-          const filtered = data.filter((u: any) => {
-            const id = getNumericId(u);
-            return id === null ? false : id >= 277;
-          });
+          // Show newest users first by numeric id (desc). Keep only users with a numeric id.
+          const withIds = data
+            .map((u: any) => ({ u, id: getNumericId(u) }))
+            .filter((x: any) => x.id !== null)
+            .sort((a: any, b: any) => b.id - a.id)
+            .map((x: any) => x.u);
 
-          // sort descending by numeric id and keep top 10
-          const sorted = [...filtered].sort((a, b) => {
-            const ai = getNumericId(a) ?? 0;
-            const bi = getNumericId(b) ?? 0;
-            return bi - ai;
-          });
-
-          setRecentUsers(sorted.slice(0, 10));
+          setRecentUsers(withIds.slice(0, 10));
         } else {
           setRecentUsers([]);
         }
