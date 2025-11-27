@@ -32,8 +32,7 @@ export default function NavBar() {
 
     if (role === "client") {
       return [
-        { href: "/client", label: "My program" },
-        { href: "/client/programs", label: "My programs" },
+        { href: "/client", label: "My programs" },
       ];
     }
 
