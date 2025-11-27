@@ -1,3 +1,10 @@
+import { RequireRole } from "@/components/auth/RequireRole";
+import TrainerClientsScreen from "@/components/screens/trainer/clients/TrainerClientsScreen";
+
 export default function TrainerClientsPage() {
-    return <div>Trainer Clients Page (should have Create Client)</div>;
+    return (
+        <RequireRole allowed={["trainer"]}>
+            <TrainerClientsScreen />
+        </RequireRole>
+    )
 }
