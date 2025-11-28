@@ -29,7 +29,7 @@ export default function EditUserForm({ user, onSaved, onCancel }: Props) {
       const id = user.userId ?? user.id ?? user.userID ?? user.user_id;
       if (!id) throw new Error("User id not found");
 
-      // Build a full payload and do a PUT (backend expects a full object per Swagger)
+      // Build a full payload and do a PUT request
       const fullPayload: any = {
         userId: Number(id),
         firstName: firstName || user.firstName || "",

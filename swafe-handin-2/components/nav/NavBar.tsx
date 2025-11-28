@@ -20,7 +20,6 @@ export default function NavBar() {
       return [
         { href: "/manager", label: "Dashboard" },
         { href: "/manager/users", label: "Users" },
-        // { href: "/manager/create-trainer", label: "Create trainer" },
       ];
     }
 
