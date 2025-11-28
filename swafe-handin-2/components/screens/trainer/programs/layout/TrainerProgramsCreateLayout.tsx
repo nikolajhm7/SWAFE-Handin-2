@@ -11,6 +11,8 @@ interface Props {
   submitting: boolean;
   error: string | null;
   validationError: string | null;
+  clients?: any[] | null;
+  clientsError?: string | null;
   onChange: (field: keyof ProgramFormValues, value: string) => void;
   onSubmit: (e: FormEvent) => void;
   onCancel: () => void;
@@ -21,6 +23,8 @@ export function TrainerProgramsCreateLayout({
   submitting,
   error,
   validationError,
+  clients,
+  clientsError,
   onChange,
   onSubmit,
   onCancel,
@@ -79,20 +83,41 @@ export function TrainerProgramsCreateLayout({
 
         <div className="program-form-field">
           <label htmlFor="clientId" className="program-form-label">
-            Client ID
+            Client
           </label>
-          <input
-            id="clientId"
-            type="number"
-            min={1}
-            value={values.clientId}
-            onChange={(e) => onChange("clientId", e.target.value)}
-            className="program-form-input"
-            placeholder="Client ID"
-            disabled={submitting}
-          />
+          {clientsError && (
+            <div className="text-sm text-red-600">{clientsError}</div>
+          )}
+          {clients && (
+            <select
+              id="clientId"
+              value={values.clientId}
+              onChange={(e) => onChange("clientId", e.target.value)}
+              disabled={submitting}
+              className="mt-1 block w-full rounded-md border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            >
+              <option value="">(No client / Unassigned)</option>
+              {clients.map((c: any) => (
+                <option key={c.userId ?? c.id ?? c.email} value={c.userId ?? c.id}>
+                  {c.firstName || c.email || "Client"} {c.lastName ? ` ${c.lastName}` : ""} — #{c.userId ?? c.id}
+                </option>
+              ))}
+            </select>
+          )}
+          {!clients && !clientsError && (
+            <input
+              id="clientId"
+              type="number"
+              min={1}
+              value={values.clientId}
+              onChange={(e) => onChange("clientId", e.target.value)}
+              className="mt-1 block w-full rounded-md border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              placeholder="Client ID"
+              disabled={submitting}
+            />
+          )}
           <p className="program-form-helper">
-            (Could be a dropdown of clients)
+            Select a client for this program (or leave unassigned).
           </p>
         </div>
 

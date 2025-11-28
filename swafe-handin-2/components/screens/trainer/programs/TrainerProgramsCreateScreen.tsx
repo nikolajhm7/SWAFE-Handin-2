@@ -6,6 +6,7 @@ import { api } from "@/services/apiClient";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { TrainerProgramsCreateLayout } from "./layout/TrainerProgramsCreateLayout";
+import { useEffect } from "react";
 
 interface ProgramFormValues {
     name: string;
@@ -16,6 +17,9 @@ interface ProgramFormValues {
 export default function TrainerProgramsCreateScreen() {
     const router = useRouter();
     const { isReady } = useAuth();
+
+    const [clients, setClients] = useState<any[] | null>(null);
+    const [clientsError, setClientsError] = useState<string | null>(null);
 
     const [values, setValues] = useState<ProgramFormValues>({
         name: "",
@@ -30,6 +34,23 @@ export default function TrainerProgramsCreateScreen() {
     if (!isReady) {
         return <div>Loading...</div>;
     }
+
+    useEffect(() => {
+        let cancelled = false;
+        async function loadClients() {
+            try {
+                const data = await api.get("/api/Users/Clients");
+                if (cancelled) return;
+                setClients(data || []);
+            } catch (err: any) {
+                if (cancelled) return;
+                setClientsError(err?.message || String(err));
+            }
+        }
+
+        loadClients();
+        return () => { cancelled = true; };
+    }, [isReady]);
 
     function handleChange(field: keyof ProgramFormValues, value: string) {
         setValues((prev) => ({ ...prev, [field]: value }));
@@ -93,6 +114,8 @@ export default function TrainerProgramsCreateScreen() {
             submitting={submitting}
             error={error}
             validationError={validationError}
+            clients={clients}
+            clientsError={clientsError}
             onChange={handleChange}
             onSubmit={handleSubmit}
             onCancel={handleCancel}

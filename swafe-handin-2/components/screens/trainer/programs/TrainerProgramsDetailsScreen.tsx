@@ -5,7 +5,7 @@ import { WorkoutProgram } from "@/models/WorkoutProgram";
 import { useAuth } from "@/providers/AuthProvider";
 import { api } from "@/services/apiClient";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { TrainerProgramsDetailsLayout } from "./layout/TrainerProgramsDetailsLayout";
 
 
@@ -17,36 +17,32 @@ export function TrainerProgramsDetailsScreen({ id }: Id) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
+    const cancelledRef = useRef(false);
+
+    async function loadProgram() {
+        if (!isReady) return;
+        cancelledRef.current = false;
+        setLoading(true);
+        setError(null);
+
+        try {
+            const data = await api.get(`/api/WorkoutPrograms/${id}`);
+            if (cancelledRef.current) return;
+            setProgram(data);
+        } catch (err: any) {
+            if (cancelledRef.current) return;
+            setError(err?.message || String(err));
+        } finally {
+            if (cancelledRef.current) return;
+            setLoading(false);
+        }
+    }
+
     useEffect(() => {
         if (!isReady) return;
-
-        let cancelled = false;
-
-        async function loadProgram(){
-            setLoading(true);
-            setError(null);
-
-            try {
-                const data = await api.get(`/api/WorkoutPrograms/${id}`);
-
-                if (!cancelled){
-                    setProgram(data);
-                }
-            } catch (err: any) {
-                if (cancelled) return;
-
-                setError(err?.message || String(err));
-            } finally {
-                if (cancelled) return;
-
-                setLoading(false);
-            }
-        }
-
         loadProgram();
-
         return () => {
-            cancelled = true;
+            cancelledRef.current = true;
         };
     }, [id, isReady]);
 
@@ -54,9 +50,22 @@ export function TrainerProgramsDetailsScreen({ id }: Id) {
         router.push("/trainer/programs");
     }
 
+    // handler to add exercise to program via POST /api/Exercises/Program/{programId}
+    async function handleAddExercise(payload: any) {
+        try {
+            await api.post(`/api/Exercises/Program/${id}`, payload);
+            // reload program after successful add
+            await loadProgram();
+            return { ok: true };
+        } catch (err: any) {
+            return { ok: false, error: err?.message || String(err) };
+        }
+    }
+
     return <TrainerProgramsDetailsLayout
         program={program}
         loading={loading}
         error={error}
-        onBack={goBack}/>
+        onBack={goBack}
+        onAddExercise={handleAddExercise} />;
 }

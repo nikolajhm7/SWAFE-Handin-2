@@ -49,11 +49,11 @@ export default function TrainerClientsScreenLayout({
         )}
 
         {clients.map((client) => (
-        <div key={client.id} className="client-card">
-            <div>
-            <p className="client-card-name">{client.firstName} {client.lastName} - ClientId: {client.userId}</p>
-            <p className="client-card-email">{client.email}</p>
-            </div>
+        <div key={client.userId ?? client.id ?? client.email} className="client-card">
+          <div>
+          <p className="client-card-name">{client.firstName} {client.lastName} - ClientId: {client.userId ?? client.id}</p>
+          <p className="client-card-email">{client.email}</p>
+          </div>
         </div>
         ))}
     </div>
