@@ -1,6 +1,18 @@
+"use client";
+
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/providers/AuthProvider";
 
 export default function HomeScreen() {
+    const { isReady, isAuthenticated, user, role, logout } = useAuth();
+    const router = useRouter();
+
+    function handleLogout() {
+        logout();
+        router.push("/");
+    }
+
     return (
         <div className="min-h-screen bg-gradient-to-b from-white via-zinc-50 to-zinc-100 dark:from-zinc-900 dark:via-zinc-900 dark:to-zinc-800">
             <main className="mx-auto max-w-5xl py-20 px-6">
@@ -10,13 +22,26 @@ export default function HomeScreen() {
                 </header>
 
                 <section className="grid gap-6 md:grid-cols-2">
-                    <div className="rounded-lg border border-zinc-100 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-                        <h2 className="text-2xl font-semibold text-zinc-900 dark:text-white">Get started</h2>
-                        <p className="mt-2 text-zinc-600 dark:text-zinc-300">Log in to your account to access role-specific dashboards. Managers can create trainers and clients; trainers manage programs; clients view assigned workouts.</p>
-                        <div className="mt-4 flex flex-wrap gap-3">
-                            <Link href="/login" className="inline-flex items-center justify-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-400">Login</Link>
+                    {!isReady || !isAuthenticated ? (
+                        <div className="rounded-lg border border-zinc-100 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+                            <h2 className="text-2xl font-semibold text-zinc-900 dark:text-white">Get started</h2>
+                            <p className="mt-2 text-zinc-600 dark:text-zinc-300">Log in to your account to access role-specific dashboards. Managers can create trainers and clients; trainers manage programs; clients view assigned workouts.</p>
+                            <div className="mt-4 flex flex-wrap gap-3">
+                                <Link href="/login" className="inline-flex items-center justify-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-400">Login</Link>
+                            </div>
                         </div>
-                    </div>
+                    ) : (
+                        <div className="rounded-lg border border-zinc-100 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+                            <h2 className="text-2xl font-semibold text-zinc-900 dark:text-white">Welcome{user?.firstName ? `, ${user.firstName}` : user?.name ? `, ${user.name}` : ""}!</h2>
+                            <p className="mt-2 text-zinc-600 dark:text-zinc-300">You are signed in as <strong className="text-zinc-800 dark:text-zinc-100">{role}</strong>. Use the quick links below to go to your dashboard.</p>
+                            <div className="mt-4 flex flex-wrap gap-3">
+                                {role === "manager" && <Link href="/manager" className="inline-flex items-center justify-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow hover:bg-indigo-500">Manager dashboard</Link>}
+                                {role === "trainer" && <Link href="/trainer" className="inline-flex items-center justify-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow hover:bg-indigo-500">Trainer dashboard</Link>}
+                                {role === "client" && <Link href="/client" className="inline-flex items-center justify-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow hover:bg-indigo-500">Client dashboard</Link>}
+                                <button onClick={handleLogout} className="inline-flex items-center justify-center rounded-md border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-200">Logout</button>
+                            </div>
+                        </div>
+                    )}
 
                     <div className="rounded-lg border border-zinc-100 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
                         <h2 className="text-2xl font-semibold text-zinc-900 dark:text-white">About this hand-in</h2>

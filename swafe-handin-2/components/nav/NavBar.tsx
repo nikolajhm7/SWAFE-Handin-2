@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useAuth } from "../../providers/AuthProvider";
+import { usePathname, useRouter } from "next/navigation";
 
 export default function NavBar() {
   const { role, isAuthenticated, logout, user } = useAuth();
@@ -18,6 +19,7 @@ export default function NavBar() {
     if (role === "manager") {
       return [
         { href: "/manager", label: "Dashboard" },
+        { href: "/manager/users", label: "Users" },
         // { href: "/manager/create-trainer", label: "Create trainer" },
       ];
     }
@@ -40,12 +42,21 @@ export default function NavBar() {
   };
   
   const navigationLinks = roleLinks();
+  const pathname = usePathname();
+  const router = useRouter();
+
+  // Show a back link when the path has at least two segments (e.g. /trainer/programs)
+  const segmentCount = pathname ? pathname.split('/').filter(Boolean).length : 0;
+  const showBack = segmentCount >= 2;
 
   return (
     <nav className="w-full px-6 py-3">
       <div className="mx-auto flex max-w-6xl items-center justify-between">
         {/* Left side: brand + role-specific links */}
         <div className="flex items-center gap-4">
+          {showBack && (
+            <button onClick={() => router.back()} className="text-sm hover:text-zinc-400 mr-2">← Back</button>
+          )}
           <Link href="/" className="font-semibold text-lg">
             Fitness App
           </Link>
